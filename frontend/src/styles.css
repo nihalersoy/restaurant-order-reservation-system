@@ -119,6 +119,143 @@ textarea {
   color: #52616b;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.form-grid,
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid label,
+.toolbar label {
+  display: grid;
+  gap: 6px;
+  color: #334e5c;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #cfc7b8;
+  border-radius: 6px;
+  background: #fffdfa;
+  color: #1f2933;
+  padding: 10px 12px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.primary-button,
+.cart-row button {
+  border: 0;
+  border-radius: 6px;
+  background: #2f4858;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.primary-button:disabled,
+.cart-row button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.message {
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.message.error {
+  border: 1px solid #d99a9a;
+  background: #fff4f4;
+  color: #8f1f1f;
+}
+
+.message.success {
+  border: 1px solid #95c7a4;
+  background: #f0fff4;
+  color: #21653a;
+}
+
+.muted {
+  color: #52616b;
+}
+
+.grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.item-card,
+.compact-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #ded8cc;
+  border-radius: 8px;
+  background: #fffdfa;
+  padding: 18px;
+}
+
+.item-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+}
+
+.item-card p {
+  margin: 0;
+  color: #52616b;
+}
+
+.item-meta,
+.summary-row,
+.cart-row,
+.compact-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.item-meta span {
+  color: #52616b;
+  font-size: 0.9rem;
+}
+
+.cart-row {
+  border-bottom: 1px solid #eee7dc;
+  padding-bottom: 12px;
+}
+
+.cart-row input {
+  max-width: 96px;
+}
+
+.summary-row {
+  border-top: 1px solid #ded8cc;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.availability-box {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #ded8cc;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
 @media (max-width: 860px) {
   .site-header {
     grid-template-columns: 1fr;
@@ -134,5 +271,11 @@ textarea {
 
   .page-container {
     padding: 28px 0;
+  }
+
+  .cart-row,
+  .compact-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
