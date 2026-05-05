@@ -1,0 +1,650 @@
+{
+  "info": {
+    "_postman_id": "b5fbb0bc-57f6-4c4e-a762-restaurant-system",
+    "name": "Restaurant Order and Reservation System",
+    "description": "Postman tests for the Spring Boot Restaurant Order and Reservation System backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Register Customer",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const runId = Date.now();",
+              "const reservationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "reservationDate.setHours(19, 30, 0, 0);",
+              "",
+              "pm.collectionVariables.set('runId', runId);",
+              "pm.collectionVariables.set('customerEmail', `postman.customer.${runId}@example.com`);",
+              "pm.collectionVariables.set('customerPassword', 'password123');",
+              "pm.collectionVariables.set('tableNumber', Math.floor(1000 + Math.random() * 9000));",
+              "pm.collectionVariables.set('reservationTime', reservationDate.toISOString().slice(0, 19));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('returns customer JWT', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+              "  pm.expect(json.tokenType).to.eql('Bearer');",
+              "  pm.expect(json.role).to.eql('CUSTOMER');",
+              "  pm.collectionVariables.set('customerToken', json.token);",
+              "  pm.collectionVariables.set('customerUserId', json.userId);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Postman Customer\",\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 Login Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('returns login JWT', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+              "  pm.expect(json.email).to.eql(pm.collectionVariables.get('customerEmail'));",
+              "  pm.collectionVariables.set('customerToken', json.token);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "03 Register Validation Error",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400 Bad Request', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('returns meaningful validation messages', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.status).to.eql(400);",
+              "  pm.expect(json.messages).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"short\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "04 Get All Menu Items",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('returns menu items and stores first item id', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json).to.be.an('array');",
+              "  pm.expect(json.length).to.be.greaterThan(0);",
+              "  pm.expect(json[0]).to.have.property('id');",
+              "  pm.collectionVariables.set('menuItemId', json[0].id);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/menus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "menus"
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 Filter Menu By Category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('all returned items are MAIN_COURSE', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json).to.be.an('array');",
+              "  json.forEach(item => pm.expect(item.category).to.eql('MAIN_COURSE'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/menus?category=MAIN_COURSE",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "menus"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "MAIN_COURSE"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "06 Create Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('returns order summary', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.orderId).to.exist;",
+              "  pm.expect(json.status).to.eql('PENDING');",
+              "  pm.expect(json.items).to.be.an('array').with.lengthOf(1);",
+              "  pm.expect(Number(json.totalAmount)).to.be.greaterThan(0);",
+              "  pm.collectionVariables.set('orderId', json.orderId);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"menuItemId\": {{menuItemId}},\n      \"quantity\": 2\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      }
+    },
+    {
+      "name": "07 Create Order Validation Error",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400 Bad Request', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('returns quantity validation message', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.messages.join(' ')).to.include('Quantity');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\n      \"menuItemId\": {{menuItemId}},\n      \"quantity\": 0\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      }
+    },
+    {
+      "name": "08 Check Reservation Availability Before Booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('table is available before booking', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.available).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/availability?tableNumber={{tableNumber}}&reservationTime={{reservationTime}}&durationMinutes=90",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "availability"
+          ],
+          "query": [
+            {
+              "key": "tableNumber",
+              "value": "{{tableNumber}}"
+            },
+            {
+              "key": "reservationTime",
+              "value": "{{reservationTime}}"
+            },
+            {
+              "key": "durationMinutes",
+              "value": "90"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "09 Create Reservation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('returns confirmed reservation', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.reservationId).to.exist;",
+              "  pm.expect(json.status).to.eql('CONFIRMED');",
+              "  pm.expect(json.tableNumber).to.eql(Number(pm.collectionVariables.get('tableNumber')));",
+              "  pm.collectionVariables.set('reservationId', json.reservationId);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tableNumber\": {{tableNumber}},\n  \"partySize\": 2,\n  \"reservationTime\": \"{{reservationTime}}\",\n  \"durationMinutes\": 90,\n  \"specialRequest\": \"Postman automated test reservation\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations"
+          ]
+        }
+      }
+    },
+    {
+      "name": "10 Check Reservation Availability After Booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200 OK', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('table is not available after booking', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.available).to.eql(false);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/availability?tableNumber={{tableNumber}}&reservationTime={{reservationTime}}&durationMinutes=90",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "availability"
+          ],
+          "query": [
+            {
+              "key": "tableNumber",
+              "value": "{{tableNumber}}"
+            },
+            {
+              "key": "reservationTime",
+              "value": "{{reservationTime}}"
+            },
+            {
+              "key": "durationMinutes",
+              "value": "90"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11 Prevent Double Booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 409 Conflict', function () {",
+              "  pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test('returns double-booking message', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.messages.join(' ')).to.include('already booked');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{customerToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tableNumber\": {{tableNumber}},\n  \"partySize\": 2,\n  \"reservationTime\": \"{{reservationTime}}\",\n  \"durationMinutes\": 90,\n  \"specialRequest\": \"Duplicate reservation should fail\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Optional Admin - Create Menu Item",
+      "description": "Requires an ADMIN JWT. Set the environment variable adminToken before running this request.",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201 Created when adminToken is valid', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('returns created menu item', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.name).to.include('Postman');",
+              "  pm.expect(json.category).to.eql('APPETIZER');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test Soup\",\n  \"description\": \"Seasonal soup for API testing\",\n  \"price\": 5.75,\n  \"category\": \"APPETIZER\",\n  \"available\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/menus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "menus"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "runId",
+      "value": ""
+    },
+    {
+      "key": "customerEmail",
+      "value": ""
+    },
+    {
+      "key": "customerPassword",
+      "value": "password123"
+    },
+    {
+      "key": "customerToken",
+      "value": ""
+    },
+    {
+      "key": "customerUserId",
+      "value": ""
+    },
+    {
+      "key": "menuItemId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "tableNumber",
+      "value": ""
+    },
+    {
+      "key": "reservationTime",
+      "value": ""
+    },
+    {
+      "key": "reservationId",
+      "value": ""
+    }
+  ]
+}

@@ -135,6 +135,36 @@ Run tests:
 mvn test
 ```
 
+## Postman Tests
+
+Postman collection and local environment files are included in the `postman` folder:
+
+- `postman/Restaurant_Order_Reservation_System.postman_collection.json`
+- `postman/Restaurant_Local.postman_environment.json`
+
+How to run:
+
+1. Start the backend with `mvn spring-boot:run`.
+2. Open Postman.
+3. Import both JSON files from the `postman` folder.
+4. Select the `Restaurant Local` environment.
+5. Run the collection from the first request.
+
+The collection tests:
+
+- Customer registration
+- Customer login
+- Validation errors
+- Get all menu items
+- Filter menu by category
+- Create order
+- Order validation error
+- Check reservation availability
+- Create reservation
+- Prevent double booking with `409 Conflict`
+
+There is also an optional admin request for creating a menu item. It requires setting `adminToken` in the Postman environment because this backend currently does not expose an admin-user creation endpoint.
+
 ## Sample Menu Data
 
 The app includes a data initializer that inserts sample menu items only when the `menu_items` table is empty.
