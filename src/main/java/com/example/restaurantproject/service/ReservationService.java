@@ -87,6 +87,14 @@ public class ReservationService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> getMyReservations(String userEmail) {
+        return reservationRepository.findByUserEmailOrderByReservationStartDesc(userEmail)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private ReservationWindow buildReservationWindow(LocalDateTime reservationTime, Integer durationMinutes) {
         if (reservationTime == null) {
             throw new IllegalArgumentException("Reservation time is required");

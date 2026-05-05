@@ -1,4 +1,5 @@
 import { getToken } from '../utils/authStorage.js';
+import { removeToken } from '../utils/authStorage.js';
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -34,6 +35,11 @@ async function request(path, options = {}) {
     const error = new Error(message);
     error.status = response.status;
     error.details = data;
+
+    if (response.status === 401) {
+      removeToken();
+    }
+
     throw error;
   }
 

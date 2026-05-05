@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { ProtectedRoute } from '../components/ProtectedRoute.jsx';
 import { AppLayout } from '../layouts/AppLayout.jsx';
 import { CartPage } from '../pages/CartPage.jsx';
 import { LoginPage } from '../pages/LoginPage.jsx';
@@ -16,10 +17,12 @@ export function AppRoutes() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/menu" element={<MenuPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/reservations/new" element={<ReservationPage />} />
-        <Route path="/orders" element={<MyOrdersPage />} />
-        <Route path="/reservations" element={<MyReservationsPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/reservations/new" element={<ReservationPage />} />
+          <Route path="/orders" element={<MyOrdersPage />} />
+          <Route path="/reservations" element={<MyReservationsPage />} />
+        </Route>
         <Route path="*" element={<Navigate to="/menu" replace />} />
       </Route>
     </Routes>

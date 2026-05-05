@@ -52,7 +52,8 @@ export function MyOrdersPage() {
             <article className="compact-card" key={order.orderId}>
               <strong>Order #{order.orderId}</strong>
               <span>{order.status}</span>
-              <span>£{Number(order.totalAmount).toFixed(2)}</span>
+              <span>GBP {Number(order.totalAmount).toFixed(2)}</span>
+              <span>{new Date(order.createdAt).toLocaleString()}</span>
             </article>
           ))}
         </div>

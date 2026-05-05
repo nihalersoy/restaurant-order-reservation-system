@@ -5,9 +5,11 @@ import com.example.restaurantproject.dto.OrderSummaryResponse;
 import com.example.restaurantproject.service.OrderService;
 import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +30,10 @@ public class OrderController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(orderService.createOrder(principal.getName(), request));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<OrderSummaryResponse>> getMyOrders(Principal principal) {
+        return ResponseEntity.ok(orderService.getMyOrders(principal.getName()));
     }
 }

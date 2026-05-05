@@ -62,6 +62,9 @@ export function CartPage() {
         description="Review selected menu items before creating an order."
       />
       <section className="panel">
+        {error ? <p className="message error">{error}</p> : null}
+        {success ? <p className="message success">{success}</p> : null}
+
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
@@ -71,7 +74,7 @@ export function CartPage() {
                 <div className="cart-row" key={item.menuItemId}>
                   <div>
                     <strong>{item.name}</strong>
-                    <p>£{Number(item.price).toFixed(2)}</p>
+                    <p>GBP {Number(item.price).toFixed(2)}</p>
                   </div>
                   <input
                     type="number"
@@ -90,11 +93,8 @@ export function CartPage() {
 
             <div className="summary-row">
               <strong>Total</strong>
-              <strong>£{total.toFixed(2)}</strong>
+              <strong>GBP {total.toFixed(2)}</strong>
             </div>
-
-            {error ? <p className="message error">{error}</p> : null}
-            {success ? <p className="message success">{success}</p> : null}
 
             <button
               className="primary-button"

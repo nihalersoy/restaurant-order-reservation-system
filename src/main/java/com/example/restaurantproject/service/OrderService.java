@@ -73,6 +73,14 @@ public class OrderService {
         return toSummary(orderRepository.save(order));
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderSummaryResponse> getMyOrders(String userEmail) {
+        return orderRepository.findByUserEmailOrderByCreatedAtDesc(userEmail)
+                .stream()
+                .map(this::toSummary)
+                .toList();
+    }
+
     private Map<Long, Integer> buildCart(List<CartItemRequest> items) {
         Map<Long, Integer> cart = new LinkedHashMap<>();
 

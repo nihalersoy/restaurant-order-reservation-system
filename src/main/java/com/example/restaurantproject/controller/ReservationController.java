@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -61,5 +62,10 @@ public class ReservationController {
                 reservationTime,
                 durationMinutes
         ));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(Principal principal) {
+        return ResponseEntity.ok(reservationService.getMyReservations(principal.getName()));
     }
 }

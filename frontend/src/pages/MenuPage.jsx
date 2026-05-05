@@ -82,7 +82,7 @@ export function MenuPage() {
             </div>
             <div className="item-meta">
               <span>{item.category}</span>
-              <strong>£{Number(item.price).toFixed(2)}</strong>
+              <strong>GBP {Number(item.price).toFixed(2)}</strong>
             </div>
             <button
               className="primary-button"

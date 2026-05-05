@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+    List<Reservation> findByUserEmailOrderByReservationStartDesc(String email);
+
     @Query("""
             select count(reservation) > 0
             from Reservation reservation

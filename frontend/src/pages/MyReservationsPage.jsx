@@ -54,6 +54,7 @@ export function MyReservationsPage() {
             <article className="compact-card" key={reservation.reservationId}>
               <strong>Reservation #{reservation.reservationId}</strong>
               <span>Table {reservation.tableNumber}</span>
+              <span>{new Date(reservation.reservationStart).toLocaleString()}</span>
               <span>{reservation.status}</span>
             </article>
           ))}
