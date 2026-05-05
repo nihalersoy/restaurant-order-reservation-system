@@ -8,12 +8,14 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public record CreateReservationRequest(
+        @NotNull(message = "Table number is required")
         @Min(value = 1, message = "Table number must be at least 1")
-        int tableNumber,
+        Integer tableNumber,
 
+        @NotNull(message = "Party size is required")
         @Min(value = 1, message = "Party size must be at least 1")
         @Max(value = 20, message = "Party size must be at most 20")
-        int partySize,
+        Integer partySize,
 
         @NotNull(message = "Reservation time is required")
         @Future(message = "Reservation time must be in the future")
